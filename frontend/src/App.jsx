@@ -2,6 +2,7 @@ import { useState, useRef } from 'react'
 import { backend_url } from './constant'
 import SpeakingAnimation from './components/SpeakingAnimation'
 import AnimatedWaveform from './components/AnimateWaveform'
+import botImage from './assets/bot.png' // Import bot image
 
 function App() {
   const [isRecording, setIsRecording] = useState(false)
@@ -143,6 +144,31 @@ function App() {
         {/* Chat Window */}
         <div className="flex-1 bg-white rounded-xl shadow-lg p-6 md:p-8 mb-6 md:mb-0 max-h-[32rem] overflow-y-auto">
           <h2 className="text-2xl font-bold mb-4 text-indigo-700">Conversation</h2>
+          {/* Face Card Animation with Bot Image */}
+          <div className="flex justify-center mb-4">
+            <div className="relative w-24 h-24 md:w-32 md:h-32 flex items-center justify-center">
+              {/* Animated waveform behind the bot image when listening */}
+              {isRecording && (
+                <span className="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
+                  <AnimatedWaveform />
+                </span>
+              )}
+              {/* Bot Image as round icon */}
+              <img
+                src={botImage}
+                alt="Bot"
+                className="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-indigo-200 shadow-lg object-cover z-10"
+                style={{ position: 'relative', zIndex: 2 }}
+              />
+              {/* Animated ring when talking or listening */}
+              {(isRecording || isSpeaking) && (
+                <span className={`absolute inset-0 flex items-center justify-center z-0 pointer-events-none`}>
+                  <span className={`absolute w-full h-full rounded-full border-4 ${isSpeaking ? 'border-green-400' : 'border-indigo-400'} animate-pulse`}></span>
+                  <span className={`absolute w-full h-full rounded-full border-8 ${isSpeaking ? 'border-green-200/60' : 'border-indigo-200/60'} animate-ping`}></span>
+                </span>
+              )}
+            </div>
+          </div>
           <div className="w-full mb-2 max-h-96 overflow-y-auto">
             {conversation.length === 0 && (
               <div className="text-gray-400 text-center">No conversation yet. Start talking!</div>
