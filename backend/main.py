@@ -22,6 +22,7 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 CORS(app)
+
 # GROQ client setup
 groq_api_key = os.getenv("GROQ_API_KEY")
 if not groq_api_key:
@@ -58,6 +59,10 @@ def voice_chat():
                 "detail": f"Invalid Content-Type: {content_type}. Must be an audio MIME type like audio/wav or audio/mpeg."
             }), 400)
 
+        # Get language code from header, default to 'en-IN'
+        language_code = request.headers.get('X-Language-Code', 'en-IN')
+        logger.info(f"Using language code: {language_code}")
+
         # Save incoming audio to temp file
         with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp:
             temp_audio_path = tmp.name
@@ -76,7 +81,7 @@ def voice_chat():
             stt_response = sarvam_client.speech_to_text.transcribe(
                 file=audio_file,
                 model="saarika:v2",
-                language_code="en-IN",
+                language_code=language_code,  # Use selected language
             )
         logger.info("STT response: %s", getattr(stt_response, "transcript", None))
 
@@ -125,7 +130,7 @@ def voice_chat():
         # Step 3: Convert LLM response text back to speech (TTS)
         tts_response = sarvam_client.text_to_speech.convert(
             text=llm_text,
-            target_language_code="en-IN",
+            target_language_code=language_code,  # Use selected language
         )
 
         if not tts_response.audios or len(tts_response.audios) == 0:

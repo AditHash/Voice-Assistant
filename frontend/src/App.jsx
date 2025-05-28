@@ -11,6 +11,8 @@ function App() {
   const [blobSize, setBlobSize] = useState(0)
   const [audioMime, setAudioMime] = useState('audio/wav')
   const [conversation, setConversation] = useState([]) // Add conversation state
+  const [isSpeaking, setIsSpeaking] = useState(false)
+  const [language, setLanguage] = useState('en-IN')
   const mediaRecorderRef = useRef(null)
   const audioChunksRef = useRef([])
   const recordStartTime = useRef(null)
@@ -71,6 +73,8 @@ function App() {
   // Play audio from base64 string
   const playBase64Audio = (base64) => {
     const audio = new Audio(`data:audio/wav;base64,${base64}`)
+    setIsSpeaking(true)
+    audio.onended = () => setIsSpeaking(false)
     audio.play()
   }
 
@@ -93,13 +97,13 @@ function App() {
         url = 'http://backend:8000'
       }
       // Prepare conversation history for multi-turn
-      // Exclude the last turn (assistant's audio_base64) for the backend
       const history = conversation.map(turn => [
         { role: 'user', content: turn.user },
         { role: 'assistant', content: turn.assistant }
       ]).flat();
       const headers = {
         'Content-Type': audioMime.startsWith('audio/') ? audioMime : 'audio/wav',
+        'X-Language-Code': language,
       };
       if (history.length > 0) {
         headers['X-Chat-History'] = JSON.stringify(history);
@@ -180,7 +184,30 @@ function App() {
         {/* Talking Window */}
         <div className="flex flex-col items-center justify-center flex-shrink-0 bg-white rounded-xl shadow-lg p-8 w-full max-w-md">
           <h1 className="text-3xl font-bold mb-4 text-indigo-700">Voice Assistant</h1>
-          <p className="mb-6 text-gray-600 text-center">Press and hold the button, speak your query, and get an AI-powered voice response!</p>
+          <p className="mb-2 text-gray-600 text-center">Press and hold the button, speak your query, and get an AI-powered voice response!</p>
+          {/* Language Selector */}
+          <div className="mb-4 w-full flex flex-col items-center">
+            <label htmlFor="language-select" className="text-sm text-gray-700 mb-1">Select Language:</label>
+            <select
+              id="language-select"
+              className="border rounded px-2 py-1 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+              value={language}
+              onChange={e => setLanguage(e.target.value)}
+              disabled={isRecording || loading}
+            >
+              <option value="en-IN">English</option>
+              <option value="hi-IN">Hindi</option>
+              <option value="bn-IN">Bengali</option>
+              <option value="gu-IN">Gujarati</option>
+              <option value="kn-IN">Kannada</option>
+              <option value="ml-IN">Malayalam</option>
+              <option value="mr-IN">Marathi</option>
+              <option value="od-IN">Odia</option>
+              <option value="pa-IN">Punjabi</option>
+              <option value="ta-IN">Tamil</option>
+              <option value="te-IN">Telugu</option>
+            </select>
+          </div>
           <button
             className={`w-32 h-32 rounded-full flex items-center justify-center text-white text-xl font-semibold shadow-lg transition-all duration-200 mb-6 relative ${isRecording ? 'bg-red-500 animate-pulse' : 'bg-indigo-600 hover:bg-indigo-700'}`}
             onMouseDown={startRecording}
@@ -194,7 +221,6 @@ function App() {
                 <AnimatedWaveform />
               </span>
             )}
-            {/* Optionally, show SpeakingAnimation when output is playing (if you track isSpeaking) */}
             <span className="z-10">
               {isRecording ? (
                 <span className="flex flex-col items-center">
@@ -208,6 +234,8 @@ function App() {
               ) : 'Hold to Talk'}
             </span>
           </button>
+          {/* Show SpeakingAnimation when assistant is speaking */}
+          {isSpeaking && <SpeakingAnimation />}
           {loading && <div className="text-indigo-600 mb-2 flex items-center gap-2">Processing <span className="animate-spin inline-block w-5 h-5 border-2 border-indigo-400 border-t-transparent rounded-full"></span></div>}
           {error && <div className="text-red-500 mb-2">{error}</div>}
           {blobSize > 0 && <div className="text-xs text-gray-400 mb-2">Audio size: {blobSize} bytes ({audioMime})</div>}

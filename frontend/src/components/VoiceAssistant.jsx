@@ -1,27 +1,17 @@
 import { useState, useRef } from 'react';
-import { backend_url } from '@/constants';
+// import { backend_url } from '..constant/constant'
 import { Mic, MicOff, Volume2 } from 'lucide-react';
-import AnimatedWaveform from './AnimatedWaveform';
+import AnimatedWaveform from './AnimateWaveform';
 import SpeakingAnimation from './SpeakingAnimation';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { useToast } from '@/hooks/use-toast';
-
-interface ConversationTurn {
-  user: string;
-  assistant: string;
-  audio_base64: string;
-}
 
 const VoiceAssistant = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [conversation, setConversation] = useState<ConversationTurn[]>([]);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const audioChunksRef = useRef<Blob[]>([]);
-  const recordStartTime = useRef<number | null>(null);
-  const { toast } = useToast();
+  const [conversation, setConversation] = useState([]);
+  const mediaRecorderRef = useRef(null);
+  const audioChunksRef = useRef([]);
+  const recordStartTime = useRef(null);
 
   // ... keep existing code (getSupportedMimeType, startRecording, stopRecording, playBase64Audio, handleStop functions)
 
@@ -39,7 +29,7 @@ const VoiceAssistant = () => {
 
         <div className="flex flex-col lg:grid lg:grid-cols-2 gap-6 lg:gap-8 items-start">
           {/* Conversation Panel */}
-          <Card className="w-full bg-gray-50 border border-gray-200 p-4 md:p-6 h-[400px] md:h-[500px] overflow-hidden order-2 lg:order-1">
+          <div className="w-full bg-gray-50 border border-gray-200 p-4 md:p-6 h-[400px] md:h-[500px] overflow-hidden order-2 lg:order-1">
             <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-4">Conversation</h2>
             <div className="h-[320px] md:h-[400px] overflow-y-auto space-y-4 pr-2">
               {conversation.length === 0 && (
@@ -62,14 +52,14 @@ const VoiceAssistant = () => {
                       <p className="text-xs font-medium mb-1 text-gray-600">Assistant</p>
                       <p className="text-sm md:text-base">{turn.assistant}</p>
                     </div>
-                    <Button
+                    <button
                       size="sm"
                       variant="ghost"
                       className="text-gray-600 hover:bg-gray-100 p-2 flex-shrink-0"
                       onClick={() => playBase64Audio(turn.audio_base64)}
                     >
                       <Volume2 className="h-4 w-4" />
-                    </Button>
+                    </button>
                   </div>
                 </div>
               ))}
@@ -83,7 +73,7 @@ const VoiceAssistant = () => {
                 </div>
               )}
             </div>
-          </Card>
+          </div>
 
           {/* Voice Control Panel */}
           <div className="flex flex-col items-center justify-center space-y-6 md:space-y-8 order-1 lg:order-2 py-8">
@@ -93,7 +83,7 @@ const VoiceAssistant = () => {
                 {isRecording && <AnimatedWaveform />}
                 {isSpeaking && <SpeakingAnimation />}
                 
-                <Button
+                <button
                   className={`
                     w-32 h-32 md:w-48 md:h-48 rounded-full text-white text-base md:text-lg font-semibold
                     transition-all duration-300 relative z-10 shadow-xl
@@ -129,7 +119,7 @@ const VoiceAssistant = () => {
                       </>
                     )}
                   </div>
-                </Button>
+                </button>
               </div>
             </div>
 
