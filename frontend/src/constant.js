@@ -5,5 +5,7 @@ const isDocker = () => {
 
 export const backend_url = isDocker() ? "http://backend:8000" : "http://localhost:8000";
 
+// export const backend_url = "http://localhost:8000";  // Default backend URL
+
 // for local development
 // For Docker deployment, App.jsx will override this to http://backend:8000 if needed

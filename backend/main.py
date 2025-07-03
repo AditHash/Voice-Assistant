@@ -94,7 +94,13 @@ def voice_chat():
         from groq.types.chat import ChatCompletionUserMessageParam
 
         # Add a system prompt (customize as needed)
-        system_prompt = ChatCompletionUserMessageParam(role="system", content="You are a helpful AI voice assistant.")
+        system_prompt_text = (
+            "You are Sarvam, a helpful, friendly, and multilingual AI voice assistant for India. "
+            "You can understand and respond in English, Hindi, Bengali, Gujarati, Kannada, Malayalam, Marathi, Odia, Punjabi, Tamil, and Telugu. "
+            "Always reply in the language the user spoke. Keep your answers concise, clear, and conversational."
+            "Dont make any assumptions and dont make up information. "
+        )
+        system_prompt = ChatCompletionUserMessageParam(role="system", content=system_prompt_text)
 
         # Try to get conversation history from request (optional, for multi-turn)
         history = request.headers.get('X-Chat-History')
@@ -113,8 +119,9 @@ def voice_chat():
 
         chat_response = groq_client.chat.completions.create(
             messages=messages,
-            model="llama-3.3-70b-versatile",
-            temperature=0.5,
+            # model="llama-3.3-70b-versatile", # use llama-3.3-70b-versatile for better performance
+            model="llama-3.1-8b-instant", # Use llama-3.1-8b-instant for faster response
+            temperature=0.3,
             max_completion_tokens=512,
             top_p=1.0,
             stop=None,
