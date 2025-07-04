@@ -7,6 +7,11 @@ RUN npm install
 
 COPY . .
 
+RUN npm run build
+
+# Install a simple static server for serving the built files
+RUN npm install -g serve
+
 EXPOSE 5173
 
-CMD ["npm", "run", "dev", "--", "--host"]
+CMD ["serve", "-s", "dist", "-l", "5173"]

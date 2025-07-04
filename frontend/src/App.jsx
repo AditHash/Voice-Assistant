@@ -92,12 +92,8 @@ function App() {
       return
     }
     try {
-      let url = backend_url
-      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-        url = 'http://localhost:8000'
-      } else {
-        url = 'http://backend:8000'
-      }
+      // Always use backend_url from constant.js
+      const url = backend_url
       // Prepare conversation history for multi-turn
       const history = conversation.map(turn => [
         { role: 'user', content: turn.user },
