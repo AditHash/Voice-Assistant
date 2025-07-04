@@ -95,7 +95,7 @@ def voice_chat():
 
         # Add a system prompt (customize as needed)
         system_prompt_text = (
-            "You are Sarvam, a helpful, friendly, and multilingual AI voice assistant for India. "
+            "You are Workmates Bot, a helpful, friendly, and multilingual AI voice assistant for India. "
             "You can understand and respond in English, Hindi, Bengali, Gujarati, Kannada, Malayalam, Marathi, Odia, Punjabi, Tamil, and Telugu. "
             "Always reply in the language the user spoke. Keep your answers concise, clear, and conversational."
             "Dont make any assumptions and dont make up information. "
@@ -119,8 +119,8 @@ def voice_chat():
 
         chat_response = groq_client.chat.completions.create(
             messages=messages,
-            # model="llama-3.3-70b-versatile", # use llama-3.3-70b-versatile for better performance
-            model="llama-3.1-8b-instant", # Use llama-3.1-8b-instant for faster response
+            model="llama-3.3-70b-versatile", # use llama-3.3-70b-versatile for better performance
+            # model="llama-3.1-8b-instant", # Use llama-3.1-8b-instant for faster response
             temperature=0.3,
             max_completion_tokens=512,
             top_p=1.0,
